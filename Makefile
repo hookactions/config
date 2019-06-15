@@ -8,3 +8,5 @@ test:
 	test -z "$(goimports -l .)"
 
 	go test -v ./... -race -cover
+
+	go mod tidy

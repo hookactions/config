@@ -37,8 +37,9 @@ const (
 	sliceDelim   = " "
 )
 
-// Interface for pre-processing values
+// ValuePreProcessor is an interface for pre-processing values
 type ValuePreProcessor interface {
+	// PreProcessValue pre-processes a key/value pair for the config.
 	PreProcessValue(key, value string) string
 }
 
@@ -49,14 +50,14 @@ type Builder struct {
 	valuePreProcessor       ValuePreProcessor
 }
 
-// Create a new builder with a ValuePreProcessor.
+// WithValuePreProcessor creates  a new builder with a ValuePreProcessor.
 // This will be called when adding values to the builder's configMap.
 // An example use would be retrieving values from AWS secret manager.
 func WithValuePreProcessor(p ValuePreProcessor) *Builder {
 	return newBuilder().WithValuePreProcessor(p)
 }
 
-// Add a ValuePreProcessor to the builder.
+// WithValuePreProcessor adds a ValuePreProcessor to the builder.
 // This will be called when adding values to the builder's configMap.
 // An example use would be retrieving values from AWS secret manager.
 func (c *Builder) WithValuePreProcessor(p ValuePreProcessor) *Builder {

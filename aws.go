@@ -25,7 +25,7 @@ func checkPrefixAndStrip(re *regexp.Regexp, s string) (string, bool) {
 	return s, false
 }
 
-// Create a new AWSSecretManagerValuePreProcessor with the given context and whether to decrypt parameter store values or not.
+// NewAWSSecretManagerValuePreProcessor creates a new AWSSecretManagerValuePreProcessor with the given context and whether to decrypt parameter store values or not.
 // This will load the aws config from external.LoadDefaultAWSConfig()
 func NewAWSSecretManagerValuePreProcessor(ctx context.Context, decryptParameterStoreValues bool) (*AWSSecretManagerValuePreProcessor, error) {
 	awsConfig, err := external.LoadDefaultAWSConfig()
@@ -42,7 +42,7 @@ func NewAWSSecretManagerValuePreProcessor(ctx context.Context, decryptParameterS
 	}, nil
 }
 
-// ValuePreProcessor for AWS.
+// AWSSecretManagerValuePreProcessor is a ValuePreProcessor for AWS.
 // Supports Secrets Manager and Parameter Store.
 type AWSSecretManagerValuePreProcessor struct {
 	decryptParameterStoreValues bool
@@ -52,6 +52,7 @@ type AWSSecretManagerValuePreProcessor struct {
 	ctx            context.Context
 }
 
+// PreProcessValue pre-processes a config key/value pair.
 func (p *AWSSecretManagerValuePreProcessor) PreProcessValue(key, value string) string {
 	return p.processConfigItem(p.ctx, key, value)
 }
