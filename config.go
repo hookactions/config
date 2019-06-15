@@ -37,10 +37,31 @@ const (
 	sliceDelim   = " "
 )
 
+// Interface for pre-processing values
+type ValuePreProcessor interface {
+	PreProcessValue(key, value string) string
+}
+
 // Builder contains the current configuration state.
 type Builder struct {
 	structDelim, sliceDelim string
 	configMap               map[string]string
+	valuePreProcessor       ValuePreProcessor
+}
+
+// Create a new builder with a ValuePreProcessor.
+// This will be called when adding values to the builder's configMap.
+// An example use would be retrieving values from AWS secret manager.
+func WithValuePreProcessor(p ValuePreProcessor) *Builder {
+	return newBuilder().WithValuePreProcessor(p)
+}
+
+// Add a ValuePreProcessor to the builder.
+// This will be called when adding values to the builder's configMap.
+// An example use would be retrieving values from AWS secret manager.
+func (c *Builder) WithValuePreProcessor(p ValuePreProcessor) *Builder {
+	c.valuePreProcessor = p
+	return c
 }
 
 func newBuilder() *Builder {
@@ -99,6 +120,10 @@ func (c *Builder) FromEnv() *Builder {
 
 func (c *Builder) mergeConfig(in map[string]string) {
 	for k, v := range in {
+		if c.valuePreProcessor != nil {
+			v = c.valuePreProcessor.PreProcessValue(k, v)
+		}
+
 		c.configMap[k] = v
 	}
 }
